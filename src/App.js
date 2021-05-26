@@ -3,10 +3,6 @@ const LoginController = require('./controllers/LoginController');
 
 class App {
     #controllers;
-    #configurarExpress;
-    #carregarControllers;
-    #iniciarServidor;
-    
 
     iniciar() {
         // configurar o express
@@ -32,7 +28,7 @@ class App {
         });
     }
 
-    #carrgarControllers = () => {
+    #carregarControllers = () => {
         // atribui para propriedade controllers a lista de controllers disponíveis da aplicação
         this.#controllers = [
             new LoginController(this.express)
