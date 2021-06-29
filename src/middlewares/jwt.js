@@ -24,15 +24,18 @@ module.exports = (req, res, next) => {
     const rotaPublica = rotasPublicas.find(rota => {
         const rotaPublicaContemWidCard = rota.url.indexOf('*') !== -1;
         const urlRequisicaoContemParteDaRotaPublica = req.url.indexOf(rota.url.replace('*', '')) !== -1;
-        return  ( // os parênteses definem a prioridade de verificação das condições
+        return ( // os parênteses definem a prioridade de verificação das condições
             // verifica se a rota da requisição é identica
-            rota.url === req.url 
+            rota.url === req.url
             || ( // ou a rota pública contem um '*' e a rota da requisição possui como parte da url a rota publica
                 rotaPublicaContemWidCard
                 && urlRequisicaoContemParteDaRotaPublica
             )
         )
-        && rota.metodo === req.method.toUpperCase()
+            && (
+                rota.metodo === req.method.toUpperCase()
+                || req.method.toUpperCase() === 'OPTIONS'
+            )
     });
 
     if (rotaPublica) {
@@ -50,11 +53,11 @@ module.exports = (req, res, next) => {
             erro: 'acesso negado, necessário o envio header authorization'
         });
     }
-    
+
     // pega o token extraindo a parte do 'Bearer ' pegando do 7 caracter em diante
     const token = auth.substr(7);
     if (!token) {
-    req.logger.info('acesso negado, requisição sem tokem de acesso')
+        req.logger.info('acesso negado, requisição sem tokem de acesso')
         res.status(401).json({
             status: 401,
             erro: 'acesso negado, o token de acesso não foi informado'
@@ -72,7 +75,7 @@ module.exports = (req, res, next) => {
         }
 
         req.logger.debug('token JWT decodificado,', `id_usuario: ${decoded._id}`);
-        
+
         // TODO: carregar o usuário a partir do banco de dados
         const usuario = await UsuarioRepository.buscarPorId(decoded._id);
         if (!usuario) {

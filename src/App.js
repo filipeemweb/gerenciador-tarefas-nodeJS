@@ -6,6 +6,7 @@ const UsuarioController = require('./controllers/UsuarioController');
 const AppConstants = require('./enums/AppConstants');
 const MongoDBConnectionHelper = require('./helpers/MongoDBConnectionHelper');
 
+const cors = require('./middlewares/cors')
 const logger = require('./middlewares/logger')
 const jwt = require('./middlewares/jwt');
 const TarefaController = require('./controllers/TarefaController');
@@ -37,6 +38,9 @@ class App {
 
         // registra o middleware do JWT para fazer validação do acesso a rotas através das requisições recebidas
         this.express.use(jwt);
+
+        // registra o middleware para habilitar requisições de outros dominios
+        this.express.use(cors);
 
         // configura o swagger da aplicação para servir a documentação
         this.express.use(
