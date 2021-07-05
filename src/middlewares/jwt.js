@@ -32,13 +32,10 @@ module.exports = (req, res, next) => {
                 && urlRequisicaoContemParteDaRotaPublica
             )
         )
-            && (
-                rota.metodo === req.method.toUpperCase()
-                || req.method.toUpperCase() === 'OPTIONS'
-            )
+            && rota.metodo === req.method.toUpperCase()
     });
 
-    if (rotaPublica) {
+    if (rotaPublica || req.method.toUpperCase() === 'OPTIONS') {
         req.logger.info('rota pública, requisição liberada');
         return next();
     }
